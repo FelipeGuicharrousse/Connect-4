@@ -1,31 +1,41 @@
 import socket
 
-# Dirección IP y puerto del servidor
-server_ip = 'localhost'  # Cambia esto a la IP de tu servidor
-server_port = 8000  # Cambia esto al puerto que desees
+# Dirección IP y puerto del servidor `connect4` en Go
+connect4_ip = 'localhost'  # Cambia esto a la IP del servidor `connect4` en Go
+connect4_port = 8001  # Cambia esto al puerto del servidor `connect4` en Go
 
-# Crear un socket TCP/IP
-servidor_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# Dirección IP y puerto del servidor intermediario (TCP para el cliente)
+intermediario_ip = 'localhost'  # Cambia esto a la IP de este servidor intermediario
+intermediario_tcp_port = 8000  # Cambia esto al puerto TCP para el cliente
 
-# Enlazar el socket a la dirección y puerto del servidor
-servidor_socket.bind((server_ip, server_port))
+# Crear un socket UDP para comunicarse con `connect4` en Go
+udp_connect4_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-# Escuchar conexiones entrantes (máximo 1 cliente en cola)
-servidor_socket.listen(1)
+# Crear un socket TCP para comunicarse con el cliente
+tcp_cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+tcp_cliente_socket.bind((intermediario_ip, intermediario_tcp_port))
+tcp_cliente_socket.listen(1)
 
-print(f"Esperando una conexión en {server_ip}:{server_port}...")
+print(f"Servidor intermediario (TCP para el cliente, UDP para `connect4`) esperando conexiones en {intermediario_ip}:{intermediario_tcp_port}...")
 
-# Aceptar una conexión entrante
-cliente_socket, cliente_addr = servidor_socket.accept()
-print(f"Conexión establecida desde {cliente_addr[0]}:{cliente_addr[1]}")
+while True:
+    # Aceptar una conexión TCP con el cliente
+    cliente_socket, cliente_addr = tcp_cliente_socket.accept()
+    print(f"Conexión establecida con el cliente desde {cliente_addr[0]}:{cliente_addr[1]}")
 
-# Recibir datos del cliente
-datos = cliente_socket.recv(1024)
-print(f"Mensaje recibido del cliente: {datos.decode()}")
+    # Recibir datos del cliente TCP
+    datos_cliente = cliente_socket.recv(1024)
+    print(f"Datos recibidos del cliente: {datos_cliente.decode()}")
 
-# Responder al cliente
-respuesta = "Mensaje recibido correctamente"
-cliente_socket.sendall(respuesta.encode())
+    # Reenviar los datos al servidor `connect4` utilizando UDP
+    udp_connect4_socket.sendto(datos_cliente, (connect4_ip, connect4_port))
 
-# Cerrar la conexión con el cliente
-cliente_socket.close()
+    # Recibir la respuesta del servidor `connect4` en Go a través de UDP
+    respuesta_connect4, _ = udp_connect4_socket.recvfrom(1024)
+    print(f"Respuesta del servidor `connect4`: {respuesta_connect4.decode()}")
+
+    # Enviar la respuesta al cliente TCP
+    cliente_socket.sendall(respuesta_connect4)
+
+    # Cerrar la conexión TCP con el cliente
+    cliente_socket.close()
