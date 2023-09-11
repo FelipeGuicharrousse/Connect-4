@@ -1,14 +1,23 @@
 import random
+from colorama import init, Fore, Style
+
+init()
 
 ESPACIO_VACIO = " "
 COLOR_1 = "x"
 COLOR_2 = "o"
 JUGADOR_1 = 1
+# La CPU también es el jugador 2
 JUGADOR_2 = 2
 CONECTA = 4
+ESTA_JUGANDO_CPU = False
 
 
 def solicitar_entero_valido(mensaje):
+    """
+    Solicita un número entero y lo sigue solicitando
+    mientras no sea un entero válido
+    """
     while True:
         try:
             posible_entero = int(input(mensaje))
@@ -36,13 +45,11 @@ def imprimir_tablero(tablero):
     for fila in tablero:
         print("|", end="")
         for valor in fila:
-            if valor == COLOR_1:
-                color_terminal = COLOR_1
-            elif valor == COLOR_2:
-                color_terminal = COLOR_2
-            else:
-                color_terminal = ESPACIO_VACIO
-            print(color_terminal, end="")
+            color_terminal = Fore.GREEN
+            if valor == COLOR_2:
+                color_terminal = Fore.RED
+            print(color_terminal + valor, end="")
+            print(Style.RESET_ALL, end="")
             print("|", end="")
         print("")
     # Pie
@@ -62,6 +69,9 @@ def obtener_fila_valida_en_columna(columna, tablero):
 
 
 def solicitar_columna(tablero):
+    """
+    Solicita la columna y devuelve la columna ingresada -1 para ser usada fácilmente como índice
+    """
     while True:
         columna = solicitar_entero_valido("Ingresa la columna para colocar la pieza: ")
         if columna <= 0 or columna > len(tablero[0]):
@@ -73,6 +83,10 @@ def solicitar_columna(tablero):
 
 
 def colocar_pieza(columna, jugador, tablero):
+    """
+    Coloca una pieza en el tablero. La columna debe
+    comenzar en 0
+    """
     color = COLOR_1
     if jugador == JUGADOR_2:
         color = COLOR_2
@@ -246,20 +260,31 @@ def elegir_jugador_al_azar():
 
 
 def imprimir_y_solicitar_turno(turno, tablero):
-    print(f"Jugador: {COLOR_1} | CPU: {COLOR_2}")
-
-    if turno == JUGADOR_1:
-        print(f"Turno del jugador ({COLOR_1})")
+    if not ESTA_JUGANDO_CPU:
+        print(f"Jugador 1: {COLOR_1} | Jugador 2: {COLOR_2}")
     else:
-        print("Turno de la CPU")
+        print(f"Jugador 1: {COLOR_1} | CPU: {COLOR_2}")
+    if turno == JUGADOR_1:
+        print(f"Turno del jugador 1 ({COLOR_1})")
+    else:
+        if not ESTA_JUGANDO_CPU:
+            print(f"Turno del jugador 2 ({COLOR_2})")
+        else:
+            print("Turno de la CPU")
     return solicitar_columna(tablero)
 
 
 def felicitar_jugador(jugador_actual):
-    if jugador_actual == JUGADOR_1:
-        print("Felicidades Jugador. Has ganado")
+    if not ESTA_JUGANDO_CPU:
+        if jugador_actual == JUGADOR_1:
+            print("Felicidades Jugador 1. Has ganado")
+        else:
+            print("Felicidades Jugador 2. Has ganado")
     else:
-        print("Ha ganado el CPU")
+        if jugador_actual == JUGADOR_1:
+            print("Felicidades Jugador 1. Has ganado")
+        else:
+            print("Ha ganado el CPU")
 
 
 def es_empate(tablero):
@@ -269,29 +294,11 @@ def es_empate(tablero):
     return True
 
 
-def obtener_columna_segun_cpu():
-    return elegir_columna_ideal()
-
-
-def obtener_jugador_contrario(jugador):
-    if jugador == JUGADOR_1:
-        return JUGADOR_2
-    return JUGADOR_1
-
-
-def elegir_columna_ideal():
-    return random.randint(0,5)
-
-
-def jugador_vs_computadora(tablero):
+def jugador_vs_jugador(tablero):
     jugador_actual = elegir_jugador_al_azar()
     while True:
         imprimir_tablero(tablero)
-        if jugador_actual == JUGADOR_1:
-            columna = imprimir_y_solicitar_turno(jugador_actual, tablero)
-        else:
-            print("CPU pensando...")
-            columna = obtener_columna_segun_cpu()
+        columna = imprimir_y_solicitar_turno(jugador_actual, tablero)
         pieza_colocada = colocar_pieza(columna, jugador_actual, tablero)
         if not pieza_colocada:
             print("No se puede colocar en esa columna")
@@ -311,6 +318,51 @@ def jugador_vs_computadora(tablero):
                 jugador_actual = JUGADOR_1
 
 
+def obtener_columna_segun_cpu(jugador, tablero):
+    return elegir_columna_ideal(jugador, tablero)
+
+
+def obtener_jugador_contrario(jugador):
+    if jugador == JUGADOR_1:
+        return JUGADOR_2
+    return JUGADOR_1
+
+
+def elegir_columna_ideal(jugador, tablerOriginal):
+    return random.randint(0,5)
+
+
+def jugador_vs_computadora(tablero):
+    global ESTA_JUGANDO_CPU
+    ESTA_JUGANDO_CPU = True
+    jugador_actual = elegir_jugador_al_azar()
+    while True:
+        imprimir_tablero(tablero)
+        if jugador_actual == JUGADOR_1:
+            columna = imprimir_y_solicitar_turno(jugador_actual, tablero)
+        else:
+            print("CPU pensando...")
+            columna = obtener_columna_segun_cpu(jugador_actual, tablero)
+        pieza_colocada = colocar_pieza(columna, jugador_actual, tablero)
+        if not pieza_colocada:
+            print("No se puede colocar en esa columna")
+        ha_ganado = comprobar_ganador(jugador_actual, tablero)
+        if ha_ganado:
+            imprimir_tablero(tablero)
+            felicitar_jugador(jugador_actual)
+            break
+        elif es_empate(tablero):
+            imprimir_tablero(tablero)
+            indicar_empate()
+            break
+        else:
+            if jugador_actual == JUGADOR_1:
+                jugador_actual = JUGADOR_2
+            else:
+                jugador_actual = JUGADOR_1
+    ESTA_JUGANDO_CPU = False
+
+
 def volver_a_jugar():
     while True:
         eleccion = input("¿Quieres volver a jugar? [s/n] ").lower()
@@ -322,15 +374,24 @@ def volver_a_jugar():
 
 def main():
     while True:
-        eleccion = input("1- Jugador vs Máquina"
+        eleccion = input("1- Jugador vs Jugador"
                          "\n"
-                         "2- Salir"
+                         "2- Jugador vs Máquina"
+                         "\n"
+                         "4- Salir"
                          "\n"
                          "Elige: ")
-        if eleccion == "2":
+        if eleccion == "4":
             break
 
         if eleccion == "1":
+            filas, columnas = 6, 6
+            while True:
+                tablero = crear_tablero(filas, columnas)
+                jugador_vs_jugador(tablero)
+                if not volver_a_jugar():
+                    break
+        if eleccion == "2":
             filas, columnas = 6, 6
             while True:
                 tablero = crear_tablero(filas, columnas)
