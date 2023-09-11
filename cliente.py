@@ -1,16 +1,15 @@
 import socket
 
-# Dirección IP y puerto del servidor
-server_ip = 'localhost'  # Cambia esto a la IP de tu servidor
-server_port = 8000  # Cambia esto al puerto que desees
+server_ip = 'localhost'  # IP Servidor Intermedio
+server_port = 8000  # Puerto Servidor Intermedio
 
 # Mensaje a enviar al servidor
 mensaje = "Hola, servidor!"
 
-# Crear un socket TCP/IP
+# Socket TCP para Servidor Intermedio
 cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Conectar al servidor
+# Conectar al Servidor Intermedio
 cliente_socket.connect((server_ip, server_port))
 
 # Enviar datos al servidor

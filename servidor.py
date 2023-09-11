@@ -1,22 +1,20 @@
 import socket
 
-# Dirección IP y puerto del servidor `connect4` en Go
-connect4_ip = 'localhost'  # Cambia esto a la IP del servidor `connect4` en Go
-connect4_port = 8001  # Cambia esto al puerto del servidor `connect4` en Go
+connect4_ip = 'localhost'  # IP Servidor connect4
+connect4_port = 8001  # Puerto Servidor connect4 
 
-# Dirección IP y puerto del servidor intermediario (TCP para el cliente)
-intermediario_ip = 'localhost'  # Cambia esto a la IP de este servidor intermediario
-intermediario_tcp_port = 8000  # Cambia esto al puerto TCP para el cliente
+intermediario_ip = 'localhost'  # IP cliente
+intermediario_tcp_port = 8000  # Puerto Cliente
 
-# Crear un socket UDP para comunicarse con `connect4` en Go
-udp_connect4_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+# Socket UDP para Servidor connect4
+udp_connect4_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
 
-# Crear un socket TCP para comunicarse con el cliente
+# Socket TCP para Cliente
 tcp_cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_cliente_socket.bind((intermediario_ip, intermediario_tcp_port))
 tcp_cliente_socket.listen(1)
 
-print(f"Servidor intermediario (TCP para el cliente, UDP para `connect4`) esperando conexiones en {intermediario_ip}:{intermediario_tcp_port}...")
+print(f"Servidor intermediario esperando conexiones en {intermediario_ip}:{intermediario_tcp_port}...")
 
 while True:
     # Aceptar una conexión TCP con el cliente
