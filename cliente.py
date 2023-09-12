@@ -6,19 +6,27 @@ server_port = 8000  # Puerto Servidor Intermedio
 # Mensaje a enviar al servidor
 mensaje = "Hola, servidor!"
 
-# Socket TCP para Servidor Intermedio
-cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+condition = True
 
-# Conectar al Servidor Intermedio
-cliente_socket.connect((server_ip, server_port))
+while(condition):
+    # Socket TCP para Servidor Intermedio
+    cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Enviar datos al servidor
-cliente_socket.sendall(mensaje.encode())
+    # Conectar al Servidor Intermedio
+    cliente_socket.connect((server_ip, server_port))
 
-# Esperar una respuesta del servidor
-respuesta = cliente_socket.recv(1024)
+    # Enviar datos al servidor
+    cliente_socket.sendall(mensaje.encode())
 
-print(f"Respuesta del servidor: {respuesta.decode()}")
+    # Esperar una respuesta del servidor
+    respuesta = cliente_socket.recv(1024)
 
-# Cerrar la conexión
-cliente_socket.close()
+    print(f"Respuesta del servidor: {respuesta.decode()}")
+
+    if (respuesta.decode() == 1):
+        print("Termino la wea")
+        condition = False
+    elif(respuesta.decode() == 2):
+        print("Ingrese el número de la columna")
+    # Cerrar la conexión
+    cliente_socket.close()

@@ -302,7 +302,7 @@ def jugador_vs_computadora(tablero):
             break
         elif es_empate(tablero):
             imprimir_tablero(tablero)
-            indicar_empate()
+            print("Empate")
             break
         else:
             if jugador_actual == JUGADOR_1:
