@@ -4,6 +4,8 @@ import (
     "fmt"
     "net"
     "os"
+    "math/rand"
+    "time"
 )
 
 func main() {
@@ -28,17 +30,24 @@ func main() {
             fmt.Println("Error al recibir datos UDP:", err)
             continue
         }
-
+        
         mensaje := string(buffer[:n])
-        fmt.Printf("Datos recibidos de %s: %s\n", addr, mensaje)
+        fmt.Printf("Datos recibidos de %s: \n%s\n", addr, mensaje)
 
-        // Procesar los datos (aquí puedes implementar la lógica del juego Connect4)
 
-        // Enviar una respuesta al servidor intermediario (UDP)
-        respuesta := "Respuesta desde `connect4`"
+        
+        // Generar un número aleatorio entre 0 y 5
+        rand.Seed(time.Now().UnixNano())
+        numeroAleatorio := rand.Intn(6)
+        
+        // Convertir el número a string
+        respuesta := fmt.Sprintf("%d", numeroAleatorio)
+        
+        // Enviar la respuesta al servidor intermediario (UDP)
         _, err = udpConn.WriteTo([]byte(respuesta), addr)
         if err != nil {
             fmt.Println("Error al enviar respuesta UDP:", err)
         }
+
     }
 }
