@@ -64,10 +64,11 @@ while True:
     cliente_socket.close()
     imprimir_tablero(tablero)
 
+    
     if jugador_actual == JUGADOR_1:
         # Avisar que es el turno del jugador
         cliente_socket, cliente_addr = tcp_cliente_socket.accept()
-        print(f"Conexión establecida con el cliente desde {cliente_addr[0]}:{cliente_addr[1]}")
+        print("Avisar que es el turno del jugador")
         mensaje = "1"
         cliente_socket.sendall(mensaje.encode())
         cliente_socket.close()
@@ -75,7 +76,7 @@ while True:
         # Mandar el texto para que la pantalla del jugador
         mensaje = f"Jugador: {COLOR_1} | CPU: {COLOR_2}\nTurno del jugador ({COLOR_1})"
         cliente_socket, cliente_addr = tcp_cliente_socket.accept()
-        print(f"Conexión establecida con el cliente desde {cliente_addr[0]}:{cliente_addr[1]}")
+        print("Mandar el texto para que la pantalla del jugador")
         cliente_socket.sendall(mensaje.encode())
         cliente_socket.close()
 
@@ -83,7 +84,7 @@ while True:
         # while True:
         cliente_socket, cliente_addr = tcp_cliente_socket.accept()
         columna = cliente_socket.recv(1024)
-        print(f"Datos recibidos del cliente: {columna.decode()}")
+        print("Recibir jugada del jugador (SOLO JUGADAS VALIDAS)")
         cliente_socket.close()
             # if columna <= 0 or columna > len(tablero[0]):
             #     print("Columna no válida")
@@ -94,6 +95,13 @@ while True:
         columna = int(columna.decode())
         columna -= 1
     else:
+        # Avisar que es el turno de cpu
+        cliente_socket, cliente_addr = tcp_cliente_socket.accept()
+        print("Avisar que es el turno de cpu")
+        mensaje = "0"
+        cliente_socket.sendall(mensaje.encode())
+        cliente_socket.close()
+
         print("CPU pensando...")
         columna = obtener_columna_segun_cpu()
     pieza_colocada = colocar_pieza(columna, jugador_actual, tablero)
@@ -104,14 +112,14 @@ while True:
     if ha_ganado:
         # Avisar que alguien gano el juego
         cliente_socket, cliente_addr = tcp_cliente_socket.accept()
-        print(f"Conexión establecida con el cliente desde {cliente_addr[0]}:{cliente_addr[1]}")
+        print("Avisar que alguien gano el juego")
         mensaje = "1"
         cliente_socket.sendall(mensaje.encode())
         cliente_socket.close()
 
         # Mandar el texto de quien ha ganado el juego
         cliente_socket, cliente_addr = tcp_cliente_socket.accept()
-        print(f"Conexión establecida con el cliente desde {cliente_addr[0]}:{cliente_addr[1]}")
+        print("Mandar el texto de quien ha ganado el juego")
         mensaje = retornar_tablero(tablero)
         
         if jugador_actual == JUGADOR_1:
@@ -125,13 +133,14 @@ while True:
     elif empate:
         # Avisar que se empato el juego
         cliente_socket, cliente_addr = tcp_cliente_socket.accept()
-        print(f"Conexión establecida con el cliente desde {cliente_addr[0]}:{cliente_addr[1]}")
+        print("Avisar que se empato el juego")
         mensaje = "1"
         cliente_socket.sendall(mensaje.encode())
         cliente_socket.close()
 
+        # Mandar el texto de quien ha empatado el juego
         cliente_socket, cliente_addr = tcp_cliente_socket.accept()
-        print(f"Conexión establecida con el cliente desde {cliente_addr[0]}:{cliente_addr[1]}")
+        print("Mandar el texto de quien ha empatado el juego")
         cliente_socket.sendall(retornar_tablero(tablero).encode())
         cliente_socket.close()
         imprimir_tablero(tablero)

@@ -26,10 +26,13 @@ print(f"Respuesta del servidor: \n{respuesta.decode()}")
 cliente_socket.close()  
 
 while(condition):
+    print("Inicio del while")
     # Recibir el tablero
     cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     cliente_socket.connect((server_ip, server_port))
+    print("Antes de la respuesta")
     respuesta = cliente_socket.recv(1024)
+    print("Después de la respuesta")
     print(respuesta.decode())
     cliente_socket.close()  
 
