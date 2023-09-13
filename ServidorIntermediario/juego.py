@@ -51,6 +51,31 @@ def imprimir_tablero(tablero):
         print("-", end="+")
     print("")
 
+def retornar_tablero(tablero):
+    # Imprime números de columnas
+    retorno_tablero = ""
+    retorno_tablero = retorno_tablero + "|"
+    for f in range(1, len(tablero[0]) + 1):
+        retorno_tablero = retorno_tablero + str(f) + "|"
+    retorno_tablero = retorno_tablero + "\n"
+    # Datos
+    for fila in tablero:
+        retorno_tablero = retorno_tablero + "|"
+        for valor in fila:
+            if valor == COLOR_1:
+                color_terminal = COLOR_1
+            elif valor == COLOR_2:
+                color_terminal = COLOR_2
+            else:
+                color_terminal = ESPACIO_VACIO
+            retorno_tablero = retorno_tablero + color_terminal + "|"
+        retorno_tablero = retorno_tablero + "\n"
+    # Pie
+    retorno_tablero = retorno_tablero + "+"
+    for f in range(1, len(tablero[0]) + 1):
+        retorno_tablero = retorno_tablero + "-" + "+"
+    retorno_tablero = retorno_tablero + "\n"
+    return retorno_tablero
 
 def obtener_fila_valida_en_columna(columna, tablero):
     indice = len(tablero) - 1
@@ -320,22 +345,22 @@ def volver_a_jugar():
             return False
 
 
-def main():
-    while True:
-        eleccion = input("1- Jugador vs Máquina"
-                         "\n"
-                         "2- Salir"
-                         "\n"
-                         "Elige: ")
-        if eleccion == "2":
-            break
+# def main():
+#     while True:
+#         eleccion = input("1- Jugador vs Máquina"
+#                          "\n"
+#                          "2- Salir"
+#                          "\n"
+#                          "Elige: ")
+#         if eleccion == "2":
+#             break
 
-        if eleccion == "1":
-            filas, columnas = 6, 6
-            while True:
-                tablero = crear_tablero(filas, columnas)
-                jugador_vs_computadora(tablero)
-                if not volver_a_jugar():
-                    break
+#         if eleccion == "1":
+#             filas, columnas = 6, 6
+#             while True:
+#                 tablero = crear_tablero(filas, columnas)
+#                 jugador_vs_computadora(tablero)
+#                 if not volver_a_jugar():
+#                     break
 
-main()
+# main()
