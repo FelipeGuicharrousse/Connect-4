@@ -32,9 +32,7 @@ func main() {
         }
         
         mensaje := string(buffer[:n])
-        fmt.Printf("Datos recibidos de %s: \n%s\n", addr, mensaje)
-
-
+        fmt.Printf("Datos recibidos de %s: %s\n", addr, mensaje)
         
         // Generar un número aleatorio entre 0 y 5
         rand.Seed(time.Now().UnixNano())
@@ -42,7 +40,8 @@ func main() {
         
         // Convertir el número a string
         respuesta := fmt.Sprintf("%d", numeroAleatorio)
-        
+        fmt.Printf("Mensaje a eviar %s ", respuesta)
+
         // Enviar la respuesta al servidor intermediario (UDP)
         _, err = udpConn.WriteTo([]byte(respuesta), addr)
         if err != nil {

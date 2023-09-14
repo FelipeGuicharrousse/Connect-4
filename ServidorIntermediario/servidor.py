@@ -39,9 +39,8 @@ udp_connect4_socket.sendto(datos_cliente, (connect4_ip, connect4_port))
 # Recibir la respuesta del servidor `connect4` en Go a través de UDP
 respuesta_connect4, _ = udp_connect4_socket.recvfrom(1024)
 print(f"Respuesta del servidor `connect4`: {respuesta_connect4.decode()}")
-
-respuesta_connect4 = 'hola como estas\n yo bien gracias\n'
 print(retornar_tablero(tablero))
+
 # Enviar la respuesta al cliente TCP
 cliente_socket.sendall(retornar_tablero(tablero).encode())
 
@@ -103,7 +102,17 @@ while True:
         cliente_socket.close()
 
         print("CPU pensando...")
-        columna = obtener_columna_segun_cpu()
+
+        # columna = obtener_columna_segun_cpu()
+        
+        # Reenviar los datos al servidor `connect4` utilizando UDP
+        udp_connect4_socket.sendto(datos_cliente, (connect4_ip, connect4_port))
+
+        # Recibir la respuesta del servidor `connect4` en Go a través de UDP
+        respuesta_connect4, _ = udp_connect4_socket.recvfrom(1024)
+        columna = int(respuesta_connect4.decode())
+
+
     pieza_colocada = colocar_pieza(columna, jugador_actual, tablero)
     if not pieza_colocada:
         print("No se puede colocar en esa columna")
